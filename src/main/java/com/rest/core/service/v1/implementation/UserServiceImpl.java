@@ -10,6 +10,7 @@ import com.rest.core.dto.authentication.AuthenticationRequest;
 import com.rest.core.dto.authentication.AuthenticationResponse;
 import com.rest.core.dto.authentication.SignupRequest;
 import com.rest.core.enums.AccountState;
+import com.rest.core.enums.EmailBodyType;
 import com.rest.core.exception.CaughtException;
 import com.rest.core.model.AccountBanData;
 import com.rest.core.model.AccountVerificationCode;
@@ -73,7 +74,9 @@ public class UserServiceImpl implements UserService {
         AppUser appuser = userRepository.findByUsername(userDetails.getUsername()).get() ;
         switch (appuser.getState()){
             case UNVERIFIED:
+                //todo - we need to 
                 throw new CaughtException("Account is not verified yet !") ;
+
             case BANNED:
                 AccountBanData banData = accountBanDataRepository.findByUser(appuser) ; 
                 //todo - finish here
@@ -123,13 +126,13 @@ public class UserServiceImpl implements UserService {
                     .verification_code(verification_code)
                     .build()) ;
 
-            EmailData emailData = EmailData.builder()
+            emailService.sendEmail(EmailData.builder()
                     .to(request.getEmail())
-                    .subject("Registration")
+                    .subject(Constant.TRADEMARK+" | You have been registered successfully!")
                     .body(String.format("Verification code to activate account = %s",verification_code))
+                    .bodyType(EmailBodyType.HTML)
                     .timestamp(LocalDateTime.now())
-                    .build();
-            emailService.sendEmail(emailData);
+                    .build());
 
             RequestResponse response = RequestResponse.builder()
                     .status_code(HttpStatus.OK)

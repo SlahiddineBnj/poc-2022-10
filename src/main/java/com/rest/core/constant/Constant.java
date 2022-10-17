@@ -18,4 +18,7 @@ public class Constant {
 
     // ban duration (days)
     public static final int BAN_DURATION = 10 ;
+
+    // trademark
+    public static final String TRADEMARK = "ATAP" ;
 }
