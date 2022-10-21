@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
         AppUser appuser = userRepository.findByUsername(userDetails.getUsername()).get() ;
         switch (appuser.getState()){
             case UNVERIFIED:
-                //todo - we need to 
+                //todo - we need to
                 throw new CaughtException("Account is not verified yet !") ;
 
             case BANNED:
@@ -161,6 +161,8 @@ public class UserServiceImpl implements UserService {
                     request.getVerification_code())) {
                 user.setState(AccountState.ACTIVE);
                 userRepository.save(user) ;
+                //remove the verification code after successfull verification
+                accountVerificationCodeRepository.delete(codeOptional.get());
                 RequestResponse response = RequestResponse.builder()
                         .message("Your account has been verified successfully !")
                         .status_code(HttpStatus.OK)
